@@ -1,31 +1,75 @@
 /**
- * Admin Routes
- * Stub para Etapa 7
+ * Backend - Admin Routes
+ * Rutas administrativas: gestion de usuarios, auditoria, configuracion
  */
 
 const express = require('express');
 const router = express.Router();
+const { asyncHandler } = require('../utils/errors');
+const { authorizeAdmin } = require('../utils/auth');
+const adminController = require('../controllers/adminController');
 
-// TODO: Implementar en Etapa 7
+// Todos los endpoints de admin requieren rol admin
+router.use(authorizeAdmin);
 
-router.get('/dialogues', (req, res) => {
-  res.status(501).json({ error: 'No implementado aún' });
-});
+/**
+ * GET /api/v1/admin/users
+ * Listar todos los usuarios
+ */
+router.get('/users', asyncHandler(adminController.listUsers));
 
-router.put('/dialogues/:section', (req, res) => {
-  res.status(501).json({ error: 'No implementado aún' });
-});
+/**
+ * GET /api/v1/admin/users/:id
+ * Obtener detalles de usuario
+ */
+router.get('/users/:id', asyncHandler(adminController.getUserDetails));
 
-router.get('/locations', (req, res) => {
-  res.status(501).json({ error: 'No implementado aún' });
-});
+/**
+ * PUT /api/v1/admin/users/:id
+ * Editar usuario
+ */
+router.put('/users/:id', asyncHandler(adminController.updateUser));
 
-router.post('/locations', (req, res) => {
-  res.status(501).json({ error: 'No implementado aún' });
-});
+/**
+ * DELETE /api/v1/admin/users/:id
+ * Eliminar usuario
+ */
+router.delete('/users/:id', asyncHandler(adminController.deleteUser));
 
-router.get('/users', (req, res) => {
-  res.status(501).json({ error: 'No implementado aún' });
-});
+/**
+ * POST /api/v1/admin/users/:id/ban
+ * Banear usuario
+ */
+router.post('/users/:id/ban', asyncHandler(adminController.banUser));
+
+/**
+ * POST /api/v1/admin/users/:id/unban
+ * Desbanear usuario
+ */
+router.post('/users/:id/unban', asyncHandler(adminController.unbanUser));
+
+/**
+ * GET /api/v1/admin/audit-log
+ * Obtener registro de auditoria
+ */
+router.get('/audit-log', asyncHandler(adminController.getAuditLog));
+
+/**
+ * GET /api/v1/admin/statistics
+ * Obtener estadisticas del sistema
+ */
+router.get('/statistics', asyncHandler(adminController.getSystemStatistics));
+
+/**
+ * PUT /api/v1/admin/config
+ * Actualizar configuracion del sistema
+ */
+router.put('/config', asyncHandler(adminController.updateSystemConfig));
+
+/**
+ * GET /api/v1/admin/config
+ * Obtener configuracion del sistema
+ */
+router.get('/config', asyncHandler(adminController.getSystemConfig));
 
 module.exports = router;
