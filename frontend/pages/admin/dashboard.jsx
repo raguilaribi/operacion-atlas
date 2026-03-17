@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Layout from '../../components/Layout';
 import AdminHeader from '../../components/admin/AdminHeader';
 import StatisticsCards from '../../components/admin/StatisticsCards';
@@ -12,16 +13,21 @@ import AuditLog from '../../components/admin/AuditLog';
 import SystemConfig from '../../components/admin/SystemConfig';
 import styles from '../../styles/admin/dashboard.module.css';
 import { api } from '../../utils/api';
+import { useAdminAuth } from '../../middleware/authMiddleware';
 
 const AdminDashboard = () => {
+  const router = useRouter();
+  const { user, loading: authLoading, isAdmin } = useAdminAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [statistics, setStatistics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchStatistics();
-  }, []);
+    if (!authLoading && isAdmin) {
+      fetchStatistics();
+    }
+  }, [authLoading, isAdmin]);
 
   const fetchStatistics = async () => {
     try {
@@ -36,6 +42,28 @@ const AdminDashboard = () => {
       setLoading(false);
     }
   };
+
+  // Mostrar loader mientras se verifica autenticacion
+  if (authLoading) {
+    return (
+      <Layout>
+        <div className={styles.adminDashboard}>
+          <div className={styles.loading}>Verificando autorizacion...</div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Si no es admin, mostrar mensaje de error (el hook ya redirige pero esto es por si acaso)
+  if (!isAdmin) {
+    return (
+      <Layout>
+        <div className={styles.adminDashboard}>
+          <div className={styles.error}>No tienes permisos para acceder a esta area</div>
+        </div>
+      </Layout>
+    );
+  }
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -64,7 +92,7 @@ const AdminDashboard = () => {
   return (
     <Layout>
       <div className={styles.adminDashboard}>
-        <AdminHeader />
+        <AdminHeader user={user} />
         
         <div className={styles.tabNavigation}>
           <button
