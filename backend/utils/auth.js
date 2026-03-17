@@ -164,10 +164,40 @@ const authenticateToken = (req, res, next) => {
  * Middleware para verificar rol de administrador
  */
 const authorizeAdmin = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: 'Usuario no autenticado',
+      code: 'NOT_AUTHENTICATED'
+    });
+  }
+
   if (req.user.role !== 'admin') {
     return res.status(403).json({
       success: false,
       message: 'Acceso denegado. Se requieren permisos de administrador',
+      code: 'INSUFFICIENT_PERMISSIONS'
+    });
+  }
+  next();
+};
+
+/**
+ * Middleware para verificar rol de moderador o administrador
+ */
+const authorizeModerator = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: 'Usuario no autenticado',
+      code: 'NOT_AUTHENTICATED'
+    });
+  }
+
+  if (req.user.role !== 'admin' && req.user.role !== 'moderator') {
+    return res.status(403).json({
+      success: false,
+      message: 'Acceso denegado. Se requieren permisos de moderador o administrador',
       code: 'INSUFFICIENT_PERMISSIONS'
     });
   }
@@ -204,6 +234,7 @@ module.exports = {
   sanitizeInput,
   authenticateToken,
   authorizeAdmin,
+  authorizeModerator,
   generatePasswordResetToken,
   JWT_SECRET,
   JWT_EXPIRATION,
