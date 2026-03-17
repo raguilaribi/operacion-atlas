@@ -1,0 +1,288 @@
+/* Admin Navigation Styles */
+
+.adminNav {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  border-bottom: 2px solid #374151;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+}
+
+/* Brand */
+.navBrand {
+  display: flex;
+  align-items: center;
+}
+
+.brandLink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #e0e0e0;
+  font-weight: 700;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.brandLink:hover {
+  color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.brandIcon {
+  font-size: 24px;
+}
+
+.brandText {
+  letter-spacing: 0.5px;
+}
+
+/* Menu */
+.navMenu {
+  display: flex;
+  gap: 30px;
+  flex: 1;
+  margin-left: 50px;
+}
+
+.navItem {
+  color: #9ca3af;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 5px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.navItem::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #3b82f6;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.navItem:hover {
+  color: #e0e0e0;
+}
+
+.navItem:hover::after {
+  transform: scaleX(1);
+}
+
+.navItem.active {
+  color: #3b82f6;
+}
+
+.navItem.active::after {
+  transform: scaleX(1);
+}
+
+/* User Menu */
+.userMenu {
+  position: relative;
+}
+
+.userButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #374151;
+  border: 1px solid #4b5563;
+  color: #e0e0e0;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.userButton:hover {
+  background: #4b5563;
+  border-color: #3b82f6;
+}
+
+.userIcon {
+  font-size: 18px;
+}
+
+.username {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown {
+  font-size: 10px;
+  color: #9ca3af;
+  transition: transform 0.3s ease;
+}
+
+.userButton:hover .dropdown {
+  color: #e0e0e0;
+}
+
+/* Dropdown Menu */
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  margin-top: 8px;
+  min-width: 200px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownItem {
+  padding: 12px 16px;
+  border-bottom: 1px solid #374151;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dropdownItem strong {
+  color: #e0e0e0;
+  font-size: 14px;
+}
+
+.userRole {
+  color: #9ca3af;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #374151;
+  margin: 0;
+}
+
+.dropdownLink {
+  display: block;
+  padding: 10px 16px;
+  color: #9ca3af;
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.dropdownLink:hover {
+  background: #374151;
+  color: #e0e0e0;
+}
+
+.logoutBtn {
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  text-align: left;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-top: 1px solid #374151;
+}
+
+.logoutBtn:hover {
+  background: #7f1d1d;
+  color: #fca5a5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navContainer {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 10px 15px;
+  }
+
+  .navBrand {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .navMenu {
+    width: 100%;
+    margin-left: 0;
+    gap: 15px;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+
+  .navItem {
+    flex: 1;
+  }
+
+  .username {
+    display: none;
+  }
+
+  .userButton {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .userIcon {
+    font-size: 16px;
+  }
+
+  .dropdownMenu {
+    right: -20px;
+    left: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .navContainer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .navMenu {
+    gap: 8px;
+  }
+
+  .navItem {
+    font-size: 12px;
+  }
+}
