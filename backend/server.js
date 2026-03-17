@@ -1,136 +1,174 @@
 /**
- * OPERACIÓN ATLAS - Intelligence Tracking Game
- * Backend Server
+ * Backend - Main Server
+ * Punto de entrada de la aplicacion
  */
 
 const express = require('express');
-const cors = require('express-cors');
+const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const rateLimit = require('express-ratelimit');
-const bodyParser = require('body-parser');
-require('dotenv').config();
+const rateLimit = require('express-rate-limit');
+const dotenv = require('dotenv');
+const path = require('path');
 
-const db = require('./config/database');
-const errorHandler = require('./middleware/errorHandler');
+// Cargar variables de entorno
+dotenv.config();
 
+// Importar configuracion y utilidades
+const { db, initDatabase } = require('./config/database');
+const { errorHandler, notFoundHandler, asyncHandler } = require('./utils/errors');
+const { authenticateToken } = require('./utils/auth');
+
+// Importar rutas
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/users');
+const gameRoutes = require('./routes/games');
+const adminRoutes = require('./routes/admin');
+const leaderboardRoutes = require('./routes/leaderboard');
+
+// Crear aplicacion Express
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || 'localhost';
 
-// ============================================
-// SECURITY MIDDLEWARE
-// ============================================
-app.use(helmet());
-app.use(cors());
+// ==========================================
+// MIDDLEWARE DE SEGURIDAD
+// ==========================================
 
-// Rate limiting
+// Helmet: Configuracion de headers de seguridad
+app.use(helmet());
+
+// CORS: Permitir requests desde el frontend
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  credentials: process.env.CORS_CREDENTIALS === 'true',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Rate limiting: Limitar requests por IP
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 900000,
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutos
   max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
-  message: 'Demasiadas solicitudes desde esta IP, por favor intente más tarde.'
+  message: 'Demasiadas solicitudes, intenta mas tarde'
 });
 app.use('/api/', limiter);
 
-// ============================================
-// BODY PARSER
-// ============================================
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+// ==========================================
+// MIDDLEWARE DE PARSEO
+// ==========================================
 
-// ============================================
+// Parsear JSON
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+// ==========================================
 // LOGGING
-// ============================================
+// ==========================================
+
+// Morgan: Logging de requests HTTP
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 } else {
   app.use(morgan('combined'));
 }
 
-// ============================================
-// STATIC FILES
-// ============================================
-app.use(express.static('frontend'));
-app.use('/admin', express.static('frontend/admin'));
+// ==========================================
+// RUTAS
+// ==========================================
 
-// ============================================
-// API ROUTES
-// ============================================
 const apiPrefix = process.env.API_PREFIX || '/api/v1';
 
 // Health check
 app.get('/health', (req, res) => {
   res.json({
-    status: 'ok',
+    success: true,
+    message: 'Servidor funcionando',
     timestamp: new Date().toISOString(),
-    version: '0.1.0',
-    environment: process.env.NODE_ENV
+    uptime: process.uptime()
   });
 });
 
-// API endpoints (to be implemented in later stages)
-app.use(`${apiPrefix}/auth`, require('./routes/auth'));
-app.use(`${apiPrefix}/game`, require('./routes/game'));
-app.use(`${apiPrefix}/leaderboard`, require('./routes/leaderboard'));
-app.use(`${apiPrefix}/admin`, require('./routes/admin'));
-
-// ============================================
-// 404 HANDLER
-// ============================================
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    error: 'Ruta no encontrada',
-    path: req.path,
-    method: req.method
+// Info de servidor
+app.get('/info', (req, res) => {
+  res.json({
+    success: true,
+    app: 'Operacion Atlas',
+    version: process.env.npm_package_version || '1.0.0',
+    environment: process.env.NODE_ENV || 'development',
+    apiVersion: process.env.API_VERSION || 'v1',
+    timestamp: new Date().toISOString()
   });
 });
 
-// ============================================
+// Rutas de autenticacion (sin proteccion)
+app.use(`${apiPrefix}/auth`, authRoutes);
+
+// Rutas protegidas
+app.use(`${apiPrefix}/users`, authenticateToken, userRoutes);
+app.use(`${apiPrefix}/games`, authenticateToken, gameRoutes);
+app.use(`${apiPrefix}/leaderboard`, authenticateToken, leaderboardRoutes);
+app.use(`${apiPrefix}/admin`, authenticateToken, adminRoutes);
+
+// Ruta no encontrada
+app.use(notFoundHandler);
+
+// ==========================================
 // ERROR HANDLING
-// ============================================
+// ==========================================
+
 app.use(errorHandler);
 
-// ============================================
-// DATABASE INITIALIZATION
-// ============================================
-db.initialize()
-  .then(() => {
-    console.log('[✓] Base de datos inicializada correctamente');
+// ==========================================
+// SERVIDOR
+// ==========================================
+
+const startServer = async () => {
+  try {
+    console.log('🚀 Iniciando servidor Operacion Atlas...');
     
-    // ============================================
-    // START SERVER
-    // ============================================
-    app.listen(PORT, HOST, () => {
+    // Inicializar base de datos
+    await initDatabase();
+    
+    // Iniciar servidor HTTP
+    const server = app.listen(PORT, HOST, () => {
       console.log(`
 ${'='.repeat(60)}`);
-      console.log('  🛘 OPERACIÓN ATLAS - Intelligence Tracking Game');
-      console.log(`${'='.repeat(60)}`);
-      console.log(`  🚀 Servidor ejecutándose en: http://${HOST}:${PORT}`);
-      console.log(`  🌐 Ambiente: ${process.env.NODE_ENV}`);
-      console.log(`  📄 API Prefix: ${apiPrefix}`);
-      console.log(`  👥 Validación: http://${HOST}:${PORT}/health`);
-      console.log(`${'='.repeat(60)}\n`);
+      console.log('✓ Servidor iniciado correctamente');
+      console.log(`✓ Ambiente: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`✓ Host: http://${HOST}:${PORT}`);
+      console.log(`✓ API Prefix: ${apiPrefix}`);
+      console.log(`✓ Health Check: http://${HOST}:${PORT}/health`);
+      console.log(`${'='.repeat(60)}
+`);
     });
-  })
-  .catch((error) => {
-    console.error('[×] Error al inicializar la base de datos:', error);
+
+    // Graceful shutdown
+    process.on('SIGTERM', async () => {
+      console.log('\n🛑 Recibido SIGTERM, cerrando servidor...');
+      server.close(() => {
+        console.log('✓ Servidor HTTP cerrado');
+        process.exit(0);
+      });
+    });
+
+    process.on('SIGINT', async () => {
+      console.log('\n🛑 Recibido SIGINT, cerrando servidor...');
+      server.close(() => {
+        console.log('✓ Servidor HTTP cerrado');
+        process.exit(0);
+      });
+    });
+
+  } catch (error) {
+    console.error('❌ Error iniciando servidor:', error);
     process.exit(1);
-  });
+  }
+};
 
-// ============================================
-// GRACEFUL SHUTDOWN
-// ============================================
-process.on('SIGTERM', () => {
-  console.log('[⚠] Señal SIGTERM recibida: cerrando el servidor...');
-  db.close();
-  process.exit(0);
-});
+// Iniciar servidor si se ejecuta directamente
+if (require.main === module) {
+  startServer();
+}
 
-process.on('SIGINT', () => {
-  console.log('\n[\u26a0] Señal SIGINT recibida: cerrando el servidor...');
-  db.close();
-  process.exit(0);
-});
-
-module.exports = app;
+module.exports = { app, startServer };
