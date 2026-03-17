@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operación Atlas - Intelligence Tracking Game</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/retro.css">
+    <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+    <!-- LOADING SCREEN -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <h1>🛘 OPERACIÓN ATLAS</h1>
+            <p>Intelligence Tracking Game</p>
+            <div class="loader"></div>
+            <p class="loading-text">Inicializando sistema...</p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div id="app" class="app-container hidden">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="navbar-content">
+                <div class="logo">
+                    <h1>🛘 OPERACIÓN ATLAS</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="#home" class="nav-link">Inicio</a>
+                    <a href="#game" class="nav-link">Jugar</a>
+                    <a href="#leaderboard" class="nav-link">Ranking</a>
+                    <a href="#profile" class="nav-link">Perfil</a>
+                    <a href="#logout" class="nav-link logout">Cerrar Sesión</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- HOME SCREEN -->
+            <section id="homeScreen" class="screen active">
+                <div class="screen-container">
+                    <div class="welcome-box">
+                        <h2>🔍 Bienvenido, Agente</h2>
+                        <p id="agentName"></p>
+                        <p class="subtitle">Selecciona una acción para continuar</p>
+                    </div>
+
+                    <div class="action-grid">
+                        <div class="action-card" data-action="new-game">
+                            <h3>🎆 Nueva Partida</h3>
+                            <p>Inicia una nueva investigación</p>
+                        </div>
+                        <div class="action-card" data-action="leaderboard">
+                            <h3>🏆 Ranking Global</h3>
+                            <p>Ver rankings de jugadores</p>
+                        </div>
+                        <div class="action-card" data-action="history">
+                            <h3>📄 Historial</h3>
+                            <p>Tus operaciones anteriores</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DIFFICULTY SELECTION -->
+            <section id="difficultyScreen" class="screen">
+                <div class="screen-container">
+                    <h2>Selecciona Dificultad</h2>
+                    <p class="description">La dificultad afectará el tiempo disponible para la investigación</p>
+
+                    <div class="difficulty-grid">
+                        <div class="difficulty-card" data-difficulty="easy">
+                            <div class="difficulty-header">
+                                <h3>😊 FÁCIL</h3>
+                                <span class="time-badge">5 horas</span>
+                            </div>
+                            <ul class="benefits">
+                                <li>✓ Más tiempo para investigar</li>
+                                <li>✓ Pistas más claras</li>
+                                <li>✓ Menos distracciones</li>
+                            </ul>
+                        </div>
+
+                        <div class="difficulty-card" data-difficulty="normal">
+                            <div class="difficulty-header">
+                                <h3>🧐 NORMAL</h3>
+                                <span class="time-badge">3 horas</span>
+                            </div>
+                            <ul class="benefits">
+                                <li>✓ Tiempo equilibrado</li>
+                                <li>✓ Pistas moderadas</li>
+                                <li>✓ Desafío moderado</li>
+                            </ul>
+                        </div>
+
+                        <div class="difficulty-card" data-difficulty="hard">
+                            <div class="difficulty-header">
+                                <h3>😠 DÍFICIL</h3>
+                                <span class="time-badge">1 hora</span>
+                            </div>
+                            <ul class="benefits">
+                                <li>✓ Tiempo limitado</li>
+                                <li>✓ Más desinformación</li>
+                                <li>✓ Máximo desafío</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- GAME SCREEN - PLACEHOLDER -->
+            <section id="gameScreen" class="screen">
+                <div class="screen-container">
+                    <h2>Pantalla de Juego</h2>
+                    <p>Se implementará en Etapa 5</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>🛘 OPERACIÓN ATLAS</h1>
+                <p>Intelligence Tracking Game</p>
+            </div>
+
+            <div class="login-tabs">
+                <button class="tab-button active" data-tab="login">Ingresar</button>
+                <button class="tab-button" data-tab="register">Registrarse</button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="loginForm" class="login-form active">
+                <div class="form-group">
+                    <label for="loginUsername">Usuario</label>
+                    <input type="text" id="loginUsername" name="username" placeholder="Tu nombre de usuario" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" name="password" placeholder="Tu contraseña" required>
+                </div>
+                <button type="submit" class="btn-primary">Ingresar</button>
+                <p class="form-note">Login local por ahora (ETAPA 2)</p>
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form id="registerForm" class="register-form">
+                <div class="form-group">
+                    <label for="regUsername">Usuario</label>
+                    <input type="text" id="regUsername" name="username" placeholder="Elige un nombre de usuario" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Correo</label>
+                    <input type="email" id="regEmail" name="email" placeholder="Tu correo electrónico" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Contraseña</label>
+                    <input type="password" id="regPassword" name="password" placeholder="Crea una contraseña" required>
+                </div>
+                <button type="submit" class="btn-primary">Crear Cuenta</button>
+                <p class="form-note">Se implementará en ETAPA 2</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- STATUS MESSAGE -->
+    <div id="statusMessage" class="status-message hidden"></div>
+
+    <!-- SCRIPTS -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
