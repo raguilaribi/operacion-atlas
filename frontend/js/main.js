@@ -1,5 +1,5 @@
 // OPERACIÓN ATLAS - Punto de entrada frontend
-// Orquesta autenticación local y flujo de pantallas para FASE 4
+// Orquesta autenticación y flujo de pantallas (FASE 5)
 
 window.ATLAS = window.ATLAS || {};
 
@@ -58,8 +58,9 @@ window.ATLAS = window.ATLAS || {};
       const password = qs('#regPassword').value.trim();
 
       try {
-        await ATLAS.api.register({ username, email, password });
-        showStatusMessage('Cuenta local creada (no persistente). Usa tus datos para ingresar.', 'success');
+        const user = await ATLAS.api.register({ username, email, password });
+        showStatusMessage('Registro exitoso. Tu sesión ha sido iniciada.', 'success');
+        ATLAS.ui.handleLoginSuccess(user);
       } catch (error) {
         showStatusMessage(error.message || 'No se pudo registrar el usuario.', 'error');
       }
