@@ -18,6 +18,41 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [0.5.0] - 2026-03-18
+
+### Agregado - FASE 5: Backend de mecanicas de juego e integracion frontend
+
+#### Backend de Juego
+- ✅ `backend/db/schema.sql` ya incluye tablas `game_sessions`, `investigation_actions`, `suspect_confidence` y `leaderboard`
+- ✅ `backend/controllers/gameController.js` implementa:
+  - Inicio de partidas (`startGame`) con seleccion aleatoria de sospechoso y edificio objetivo
+  - Acciones de investigacion (`performAction`) con consumo de tiempo y registro de pistas
+  - Envio de resultado final (`submitResult`) con calculo basico de puntos y registro en leaderboard
+  - Obtencion de pistas (`getClues`) y nivel de confianza por sospechoso (`getSuspectConfidence`)
+  - Abandono de partida (`abandonGame`)
+- ✅ Rutas protegidas `/api/v1/games/*` montadas en `backend/routes/games.js`
+- ✅ Nuevos stubs de contenido en `backend/data/`:
+  - `suspects.js` con 3 sospechosos base
+  - `locations.js` con 4 locaciones base de Santiago
+  - `clues.js` con 4 pistas simuladas para pruebas
+
+#### Frontend - Integracion con Backend
+- ✅ `frontend/js/api.js` ahora es un cliente HTTP real:
+  - Login y registro contra `/api/v1/auth/login` y `/api/v1/auth/register`
+  - Manejo de JWT en `localStorage` (`atlas_access_token`, `atlas_refresh_token`, `atlas_user`)
+  - Logout contra `/api/v1/auth/logout` + limpieza local
+  - Inicio de partidas (`startGameSession`) y ejecucion de acciones (`performGameAction`) contra `/api/v1/games/*`
+- ✅ `frontend/js/ui.js` (HUD de juego) ahora:
+  - Inicia partidas llamando a `ATLAS.api.startGameSession`
+  - Ejecuta acciones de investigacion desde el boton "Avanzar turno", llamando a `ATLAS.api.performGameAction`
+  - Registra en el log las pistas obtenidas y el tiempo simulado consumido por accion
+  - Usa `ATLAS.api.logout()` al cerrar sesion desde la navegacion
+- ✅ `frontend/js/main.js` actualiza formularios de login/registro para usar autenticacion real del backend y mantiene la sesion iniciada tras registro
+
+> Nota: El contenido de juego (100 locaciones, 5 sospechosos completos, etc.) seguira ampliandose en la FASE de contenido, pero la tuberia de mecanicas y persistencia ya esta operativa para prototipos.
+
+---
+
 ## [0.4.0] - 2026-03-18
 
 ### Agregado - FASE 4: Frontend de juego
@@ -141,8 +176,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 1. **FASE 1**: Setup inicial (0.1.0)
 2. **FASE 2**: Backend autenticacion (0.2.0)
 3. **FASE 3**: Documentacion y panel admin (0.3.0)
-4. **FASE 4**: Frontend de juego (0.4.0) ✅ **ACTUAL**
-5. **FASE 5**: Backend de mecanicas de juego (0.5.0)
+4. **FASE 4**: Frontend de juego (0.4.0)
+5. **FASE 5**: Backend de mecanicas de juego (0.5.0) ✅ **ACTUAL**
 6. **FASE 6**: Testing y optimizaciones (0.6.0)
 7. **FASE 7**: Deployment a produccion (1.0.0)
 
