@@ -1,5 +1,5 @@
-// OPERACIÓN ATLAS - UI de juego (FASE 4)
-// Manejo de pantallas, HUD y logica basica de juego en el frontend
+// OPERACIÓN ATLAS - UI de juego (FASE 5)
+// Manejo de pantallas, HUD y logica de juego conectada al backend
 
 window.ATLAS = window.ATLAS || {};
 
@@ -25,25 +25,32 @@ window.ATLAS = window.ATLAS || {};
     startNewGame: async function startNewGame(difficultyKey) {
       const difficulty = this.difficulties[difficultyKey] || this.difficulties.normal;
 
-      const session = await ATLAS.api.createLocalGameSession(difficultyKey);
+      try {
+        const game = await ATLAS.api.startGameSession(difficultyKey);
 
-      this.current = {
-        id: session.id,
-        difficultyKey,
-        difficultyLabel: difficulty.label,
-        totalSeconds: difficulty.totalSeconds,
-        remainingSeconds: difficulty.totalSeconds,
-        alertLevel: 'low',
-        objectives: this.baseObjectives.map((text, index) => ({
-          id: index + 1,
-          text,
-          completed: false
-        })),
-        log: []
-      };
+        this.current = {
+          id: game.gameId,
+          difficultyKey,
+          difficultyLabel: difficulty.label,
+          totalSeconds: difficulty.totalSeconds,
+          remainingSeconds: difficulty.totalSeconds,
+          alertLevel: 'low',
+          objectives: this.baseObjectives.map((text, index) => ({
+            id: index + 1,
+            text,
+            completed: false
+          })),
+          log: []
+        };
 
-      this.renderGameScreen();
-      this.startTimer();
+        this.renderGameScreen();
+        this.startTimer();
+        this.log('Sesión de juego iniciada en el servidor. Puedes comenzar a investigar.');
+      } catch (error) {
+        console.error('Error iniciando partida:', error);
+        showStatusMessage(error.message || 'No se pudo iniciar la operación.', 'error');
+        switchScreen('homeScreen');
+      }
     },
 
     renderGameScreen: function renderGameScreen() {
@@ -76,7 +83,7 @@ window.ATLAS = window.ATLAS || {};
           <div class="game-map">
             <div class="game-map-header">
               <span>📍 Mapa operativo - Santiago Centro</span>
-              <span class="game-hint">Vista simplificada para FASE 4</span>
+              <span class="game-hint">Vista simplificada; el mapa completo llegará en una fase posterior</span>
             </div>
             <div class="game-map-grid" id="gameMapGrid">
               ${this.renderMapCells()}
@@ -111,19 +118,18 @@ window.ATLAS = window.ATLAS || {};
       `;
 
       this.bindGameEvents();
-      this.log('Sesión local de práctica iniciada. Mecánicas avanzadas llegarán en FASE 5.');
     },
 
     renderMapCells: function renderMapCells() {
       const sectors = [
-        'Plaza de Armas',
-        'La Moneda',
-        'Bellas Artes',
-        'Lastarria',
-        'Barrio Brasil',
-        'Estación Central',
-        'Providencia',
-        'Ñuñoa'
+        { name: 'Plaza de Armas', locationId: 'loc_plaza_armas' },
+        { name: 'La Moneda', locationId: 'loc_la_moneda' },
+        { name: 'Bellas Artes', locationId: 'loc_bellas_artes' },
+        { name: 'Lastarria', locationId: 'loc_lastarria' },
+        { name: 'Barrio Brasil', locationId: 'loc_barrio_brasil' },
+        { name: 'Estación Central', locationId: 'loc_estacion_central' },
+        { name: 'Providencia', locationId: 'loc_providencia' },
+        { name: 'Ñuñoa', locationId: 'loc_nunoa' }
       ];
 
       return sectors
@@ -131,7 +137,7 @@ window.ATLAS = window.ATLAS || {};
           let extraClass = '';
           if (index === 2) extraClass = ' game-map-cell--current';
           if (index === 5) extraClass = ' game-map-cell--target';
-          return `<div class="game-map-cell${extraClass}">${sector}</div>`;
+          return `<div class="game-map-cell${extraClass}" data-location-id="${sector.locationId}">${sector.name}</div>`;
         })
         .join('');
     },
@@ -171,6 +177,34 @@ window.ATLAS = window.ATLAS || {};
         btnFinish.addEventListener('click', () => {
           this.finishGame('Operación finalizada manualmente.');
         });
+      }
+    },
+
+    advanceTurn: async function advanceTurn() {
+      if (!this.current || !this.current.id) {
+        showStatusMessage('No hay una partida activa.', 'error');
+        return;
+      }
+
+      try {
+        // Por ahora usamos una accion generica y una locacion fija; en futuras fases se elegira desde la UI
+        const action = await ATLAS.api.performGameAction(this.current.id, {
+          actionType: 'analysis',
+          locationId: 'loc_estacion_central'
+        });
+
+        this.log(
+          `Acción de investigación ejecutada. Se consumieron ${Math.floor(
+            action.timeConsumed / 60
+          )} minutos de tiempo simulado.`
+        );
+
+        if (action.clueObtained) {
+          this.log(`Pista obtenida: ${action.clueObtained}`);
+        }
+      } catch (error) {
+        console.error('Error ejecutando acción de juego:', error);
+        showStatusMessage(error.message || 'No se pudo ejecutar la acción.', 'error');
       }
     },
 
@@ -274,8 +308,6 @@ window.ATLAS = window.ATLAS || {};
       const type = allCompleted ? 'success' : 'info';
 
       showStatusMessage(reason, type);
-
-      // En FASE 4 nos quedamos en la pantalla de juego, pero podríamos volver a home
     },
 
     log: function log(message) {
@@ -294,7 +326,6 @@ window.ATLAS = window.ATLAS || {};
 
   const UI = {
     initScreens() {
-      // Por defecto mostramos loginScreen (definido en HTML)
       const app = qs('#app');
       const loginScreen = qs('#loginScreen');
       const loading = qs('#loadingScreen');
@@ -310,7 +341,7 @@ window.ATLAS = window.ATLAS || {};
     initNavigation() {
       const links = qsa('.nav-link');
       links.forEach((link) => {
-        link.addEventListener('click', (event) => {
+        link.addEventListener('click', async (event) => {
           event.preventDefault();
           const href = link.getAttribute('href') || '';
 
@@ -323,7 +354,7 @@ window.ATLAS = window.ATLAS || {};
           } else if (href === '#profile') {
             showStatusMessage('El perfil de agente se implementará en una fase posterior.', 'info');
           } else if (href === '#logout') {
-            this.handleLogout();
+            await this.handleLogout();
           }
         });
       });
@@ -371,7 +402,8 @@ window.ATLAS = window.ATLAS || {};
       switchScreen('homeScreen');
     },
 
-    handleLogout() {
+    async handleLogout() {
+      await ATLAS.api.logout();
       const app = qs('#app');
       const loginScreen = qs('#loginScreen');
 
