@@ -18,6 +18,36 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [0.4.0] - 2026-03-18
+
+### Agregado - FASE 4: Frontend de juego
+
+#### Interfaz de Juego
+- ✅ Pantalla de inicio con acciones para nueva partida, ranking e historial
+- ✅ Flujo de seleccion de dificultad (facil, normal, dificil) con tiempos asociados
+- ✅ Pantalla de juego con HUD (timer, nivel de alerta, dificultad actual)
+- ✅ Mapa operativo simplificado de Santiago Centro (grid de sectores)
+- ✅ Barra lateral con lista de objetivos de la mision
+- ✅ Log de eventos de la operacion (actividad reciente)
+
+#### Logica de Juego (frontend)
+- ✅ Sistema local de sesion de juego (stub) sin dependencias de backend
+- ✅ Timer de cuenta regresiva por dificultad con estados de alerta
+- ✅ Marcado y desmarcado de objetivos con actualizacion visual
+- ✅ Botones de control: avanzar turno, marcar objetivo, terminar operacion
+- ✅ Mensajes de estado en pantalla para feedback al jugador
+
+#### Estructura Frontend
+- ✅ `frontend/js/utils.js` con helpers de UI (DOM, mensajes, cambio de pantallas)
+- ✅ `frontend/js/api.js` con stub local para login/registro y sesion de juego
+- ✅ `frontend/js/ui.js` con HUD de juego, mapa y manejo de objetivos
+- ✅ `frontend/js/main.js` como orquestador de autenticacion y flujo de pantallas
+- ✅ `frontend/css/game.css` extendido con layout y estilos del HUD y mapa
+
+> Nota: La logica de backend y mecanicas avanzadas del juego se implementaran en la **FASE 5**.
+
+---
+
 ## [0.3.0] - 2026-03-17
 
 ### Agregado - FASE 3: Documentacion y Panel Admin
@@ -90,10 +120,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - ✅ Health check endpoint
 
 #### Frontend
-- ✅ Proyecto React con Vite
-- ✅ Estructura de carpetas organizada
-- ✅ Configuracion de rutas con React Router
-- ✅ Cliente HTTP con axios
+- ✅ Estructura HTML/CSS base en `frontend/`
+- ✅ Pantallas de login, home y seleccion de dificultad
 
 #### DevOps
 - ✅ Docker Compose para servicios
@@ -112,8 +140,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 1. **FASE 1**: Setup inicial (0.1.0)
 2. **FASE 2**: Backend autenticacion (0.2.0)
-3. **FASE 3**: Documentacion y panel admin (0.3.0) ✅ **ACTUAL**
-4. **FASE 4**: Frontend de juego (0.4.0)
+3. **FASE 3**: Documentacion y panel admin (0.3.0)
+4. **FASE 4**: Frontend de juego (0.4.0) ✅ **ACTUAL**
 5. **FASE 5**: Backend de mecanicas de juego (0.5.0)
 6. **FASE 6**: Testing y optimizaciones (0.6.0)
 7. **FASE 7**: Deployment a produccion (1.0.0)
