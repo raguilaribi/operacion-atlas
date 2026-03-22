@@ -82,7 +82,7 @@ operacion-atlas/
 │   ├── middleware/
 │   ├── models/
 │   ├── db/                 # Base de datos SQLite
-│   └── data/               # JSON de contenido (diálogos, locaciones, etc)
+│   └── data/               # Contenido de juego (sospechosos, locaciones, pistas)
 │
 ├── frontend/              # Interfaz web
 │   ├── index.html
@@ -94,8 +94,10 @@ operacion-atlas/
 │   ├── js/                 # Lógica front
 │   └── assets/             # Imágenes, sonidos, fonts
 │
-├── PLAN_DESARROLLO.md    # Plan completo de 9 fases
-├── API.md                # Documentación de endpoints
+├── docs/                  # Documentación extendida (API, panel admin, etc.)
+├── PLAN_DESARROLLO.md    # Plan completo de fases
+├── PROGRESO_DESARROLLO.md# Seguimiento de fases
+├── CHANGELOG.md          # Historial de versiones
 ├── README.md             # Este archivo
 ├── package.json
 ├── .env.example          # Variables de entorno
@@ -104,13 +106,13 @@ operacion-atlas/
 
 ---
 
-## 🚀 Inicio Rápido
+## 🚀 Inicio Rápido (Desarrollo)
 
 ### Requisitos
 - Node.js 18+
 - npm o yarn
 
-### Instalación
+### Instalación local
 
 ```bash
 # 1. Clonar repositorio
@@ -127,189 +129,115 @@ cp .env.example .env
 # 4. Inicializar base de datos
 node backend/db/init.js
 
-# 5. Iniciar servidor
+# 5. Iniciar servidor en modo desarrollo
 npm start
 
 # 6. Abrir en navegador
 # http://localhost:3000
 ```
 
-### Credenciales de Prueba
-```
-Usuario: agente_test
-Contraseña: Test123456!
-Rol: admin (puede acceder a panel admin)
-```
+### Tests automatizados
 
----
-
-## 📄 Fases de Desarrollo
-
-El proyecto se desarrolla en **9 fases iterativas** (sin deadline fijo):
-
-| Fase | Título | Duración | Estado |
-|------|--------|----------|--------|
-| 1 | Infraestructura Base & Auth | 2 sem | 🔄 EN DESARROLLO |
-| 2 | Home & Selectores | 1 sem | ⏳ Pendiente |
-| 3 | BD de Contenido | 1.5 sem | ⏳ Pendiente |
-| 4 | Lógica de Investigación | 2 sem | ⏳ Pendiente |
-| 5 | Mapa & Timer | 1.5 sem | ⏳ Pendiente |
-| 6 | Acusación & Resultado | 1 sem | ⏳ Pendiente |
-| 7 | Panel de Admin | 2 sem | ⏳ Pendiente |
-| 8 | LDAP/Active Directory | 1 sem | ⏳ Pendiente |
-| 9 | Testing & Deploy | 2 sem | ⏳ Pendiente |
-
-**Ver detalles en**: [PLAN_DESARROLLO.md](./PLAN_DESARROLLO.md)
-
----
-
-## 🎯 Características del Juego
-
-### 4 Acciones Investigativas
-
-| Acción | Tiempo | Información | Precisión |
-|--------|--------|------------|------------|
-| 📚 Búsqueda en BD | 5 min | Media | 70% |
-| 👤 Interrogatorio | 15 min | Variable | 50% |
-| 🔍 Vigilancia | 25 min | Alta | 90% |
-| 📑 Análisis | 10 min | Específica | 85% |
-
-### 3 Niveles de Dificultad
-
-| Nivel | Tiempo Simulado | Tiempo Real | Multiplicador |
-|-------|-----------------|-------------|---------------|
-| 🟢 FÁCIL | 5 horas | 300 min | 1.0x |
-| 🟡 NORMAL | 3 horas | 180 min | 1.5x |
-| 🔴 DIFÍCIL | 1 hora | 60 min | 2.0x |
-
-### 5 Perfiles de Sospechosos
-
-1. **Extrema Derecha** → Objetivo: La Moneda
-2. **Extrema Izquierda** → Objetivo: Congreso Nacional
-3. **Ecologista Extremo** → Objetivo: Centro Comercial
-4. **Religioso Extremo** → Objetivo: Iglesia/Templo
-5. **Activista de Género Extremo** → Objetivo: Ministerio
-
----
-
-## 🕐 Sistema de Puntuación
-
-```
-Fórmula: Puntos = Base × Multiplicador_Dificultad × Bonus_Tiempo
-
-Base = 1000 puntos (captura correcta)
-
-Multiplicador:
-  - FÁCIL: 1.0x
-  - NORMAL: 1.5x
-  - DIFÍCIL: 2.0x
-
-Bonus_Tiempo = (Tiempo_Restante / Tiempo_Total) × 500
-
-Ejemplo:
-  - Dificultad NORMAL
-  - Acertó en 120 de 180 minutos
-  - Puntos = 1000 × 1.5 × (60/180 × 500) ≈ 250,000 puntos
+```bash
+npm test        # Ejecuta Jest en modo secuencial (--runInBand)
 ```
 
 ---
 
-## 📝 API Endpoints
+## ☁️ Despliegue (FASE 7)
 
-### Autenticación
-```
-POST   /api/auth/register     # Registrar usuario
-POST   /api/auth/login        # Iniciar sesión
-POST   /api/auth/logout       # Cerrar sesión
-GET    /api/auth/verify       # Verificar token
-```
+La aplicación está pensada para correr como **un único servicio Node.js** que sirve:
 
-### Juego
-```
-POST   /api/game/new          # Crear nueva partida
-GET    /api/game/current      # Obtener partida actual
-POST   /api/game/investigate  # Ejecutar investigación
-POST   /api/game/capture      # Capturar sospechoso
-GET    /api/game/status       # Estado actual
-POST   /api/game/end          # Terminar partida
+- API REST (`/api/v1/*`) desde `backend/server.js`
+- Archivos estáticos del frontend (`frontend/`) desde el mismo servidor Express (configurado en el backend)
+
+### Despliegue básico en servidor Linux
+
+1. **Copiar código al servidor**
+
+```bash
+ssh usuario@mi-servidor
+mkdir -p /opt/operacion-atlas
+cd /opt/operacion-atlas
+# Copiar archivos del repo a este directorio (git clone o rsync)
 ```
 
-### Ranking
-```
-GET    /api/leaderboard       # Top 10 global
-GET    /api/leaderboard/user  # Estadísticas del usuario
-GET    /api/stats/:userId     # Historial de partidas
+2. **Instalar dependencias y preparar entorno**
+
+```bash
+npm install --production
+cp .env.example .env
+# Editar .env con valores seguros (JWT_SECRET, CORS_ORIGIN, etc.)
+node backend/db/init.js
 ```
 
-### Admin
-```
-GET    /api/admin/dialogues       # Obtener diálogos
-PUT    /api/admin/dialogues/:sec  # Editar diálogos
-PUT    /api/admin/locations       # CRUD locaciones
-PUT    /api/admin/suspects        # CRUD sospechosos
-PUT    /api/admin/buildings       # CRUD edificios
-GET    /api/admin/stats           # Estadísticas admin
+3. **Levantar el servidor con un process manager (ej: pm2)**
+
+```bash
+npm install -g pm2
+pm2 start backend/server.js --name operacion-atlas
+pm2 save
+pm2 startup            # Opcional: arranque automático al boot
 ```
 
-**Ver documentación completa en**: [API.md](./API.md)
+4. **Configurar Nginx como reverse proxy (opcional)**
+
+Ejemplo de bloque de servidor:
+
+```nginx
+server {
+    listen 80;
+    server_name mi-dominio.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+Recomendado: añadir HTTPS vía Let’s Encrypt (certbot) en el mismo Nginx.
 
 ---
 
-## 📢 Panel de Administración
+## 📄 Fases de Desarrollo (resumen)
 
-Acceso en: `http://localhost:3000/admin`
+El proyecto se desarrolla en varias fases. El detalle y estado actual se mantiene en:
 
-### Funcionalidades
+- [PLAN_DESARROLLO.md](./PLAN_DESARROLLO.md)
+- [PROGRESO_DESARROLLO.md](./PROGRESO_DESARROLLO.md)
+- [CHANGELOG.md](./CHANGELOG.md)
 
-- **Editor de Diálogos**: Editar todas las conversaciones del juego por sección
-- **Gestor de Locaciones**: CRUD de ~100 locaciones de Santiago
-- **Gestor de Sospechosos**: CRUD de 5 perfiles extremistas
-- **Gestor de Edificios**: CRUD de 5 objetivos principales
-- **Dashboard**: Estadísticas en tiempo real
-- **Auditoria**: Log de todos los cambios realizados
+Consulta estos archivos para ver qué incluye cada fase (FASE 1–7) y qué está pendiente.
 
 ---
 
-## 🔐 Autenticación
+## 📝 API Endpoints (visión general)
 
-### Tipos Soportados
+La API real utiliza el prefijo `/api/v1`. La documentación completa vive en los archivos de `docs/`.
 
-1. **Local**: Usuario/Contraseña (predeterminado)
-2. **LDAP**: Directorio LDAP empresarial (opcional)
-3. **Active Directory**: Integración con AD (futuro)
+### Autenticación (ejemplo)
 
-### Configuración .env
-
-```env
-# Servidor
-NODE_ENV=development
-PORT=3000
-
-# Base de Datos
-DB_PATH=./backend/db/atlas.db
-
-# JWT
-JWT_SECRET=tu_secreto_aqui_cambiar_en_produccion
-JWT_EXPIRE=7d
-
-# LDAP (opcional)
-AUTH_TYPE=local  # o "ldap"
-LDAP_URL=ldap://ldap.example.com:389
-LDAP_BASE=dc=example,dc=com
-LDAP_BIND_DN=cn=admin,dc=example,dc=com
-LDAP_BIND_PASSWORD=secret
-
-# CORS
-CORS_ORIGIN=http://localhost:3000
+```http
+POST   /api/v1/auth/register
+POST   /api/v1/auth/login
+POST   /api/v1/auth/logout
+GET    /api/v1/auth/me
 ```
 
----
+### Juego (ejemplo)
 
-## 📑 Documentación
+```http
+POST   /api/v1/games/start
+GET    /api/v1/games/:gameId
+POST   /api/v1/games/:gameId/action
+POST   /api/v1/games/:gameId/submit
+```
 
-- **[PLAN_DESARROLLO.md](./PLAN_DESARROLLO.md)**: Plan detallado de 9 fases
-- **[API.md](./API.md)**: Documentación completa de endpoints
-- **[README.md](./README.md)**: Este archivo
+Para los endpoints de admin y leaderboard ver la documentación específica en `docs/`.
 
 ---
 
@@ -317,17 +245,19 @@ CORS_ORIGIN=http://localhost:3000
 
 ### Manual
 
-1. Registrar nuevo usuario
+1. Registrar nuevo usuario desde la interfaz
 2. Seleccionar dificultad
-3. Realizar investigaciones
-4. Acusar sospechoso
-5. Verificar puntuación y ranking
+3. Realizar acciones de investigación
+4. Enviar acusación desde el flujo de juego
+5. Verificar el resultado y la puntuación
 
-### Automatizado (futuro)
+### Automatizado
 
 ```bash
 npm test
 ```
+
+- Ejecuta Jest con suites para autenticación, administrador y mecánicas de juego.
 
 ---
 
@@ -357,15 +287,5 @@ MIT License - Ver [LICENSE](./LICENSE)
 
 ---
 
-## 📝 Notas de Desarrollo
-
-- Proyecto en desarrollo iterativo
-- Cada fase es independiente pero complementaria
-- Cambios pueden solicitarse en cualquier momento
-- Documentación se actualiza con cada commit
-- No hay deadline, pero aprox. 13-14 semanas para MVP
-
----
-
-**Última actualización**: 17 de Marzo, 2026  
-**Versión**: 1.0-alpha
+**Última actualización**: 22 de Marzo, 2026  
+**Versión**: 0.6.0
