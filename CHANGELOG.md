@@ -18,6 +18,32 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [0.6.0] - 2026-03-22
+
+### Agregado - FASE 6: Testing y optimizaciones
+
+#### Testing Backend
+- ✅ `backend/tests/admin.test.js` actualizado al contrato actual de autenticacion (/auth)
+  - Usa `username` + `password` en login
+  - Usa `passwordConfirm` en registro
+  - Extrae `tokens.accessToken` segun nueva respuesta de /auth
+  - Crea usuarios de prueba con sufijo `_f6` y los limpia al final del suite
+- ✅ Nuevo archivo `backend/tests/auth.test.js`
+  - Pruebas basicas de registro y login de usuarios
+  - Verificacion de estructura de respuesta (user + tokens.accessToken)
+- ✅ Nuevo archivo `backend/tests/game.test.js`
+  - Pruebas basicas para `/api/v1/games/start` y `/api/v1/games/:gameId/action`
+  - Verifica que se pueda iniciar una partida y ejecutar una accion de investigacion usando los datos stub de la FASE 5
+
+#### Optimizaciones de entorno de pruebas
+- ✅ `package.json` actualizado para ejecutar `jest --runInBand` en el script `test`
+  - Evita conflictos de concurrencia con SQLite al correr multiples suites
+  - Mejora la estabilidad de los tests de integracion contra la misma base de datos
+
+> Nota: Estas pruebas iniciales de FASE 6 cubren flujos felices principales. Futuros incrementos pueden ampliar cobertura (errores, limites, mas endpoints) y agregar tests de frontend/E2E.
+
+---
+
 ## [0.5.0] - 2026-03-18
 
 ### Agregado - FASE 5: Backend de mecanicas de juego e integracion frontend
@@ -41,10 +67,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
   - Login y registro contra `/api/v1/auth/login` y `/api/v1/auth/register`
   - Manejo de JWT en `localStorage` (`atlas_access_token`, `atlas_refresh_token`, `atlas_user`)
   - Logout contra `/api/v1/auth/logout` + limpieza local
-  - Inicio de partidas (`startGameSession`) y ejecucion de acciones (`performGameAction`) contra `/api/v1/games/*`
+  - Inicio de partidas (`startGameSession`) y ejecucion de acciones (`performAction`) contra `/api/v1/games/*`
 - ✅ `frontend/js/ui.js` (HUD de juego) ahora:
   - Inicia partidas llamando a `ATLAS.api.startGameSession`
-  - Ejecuta acciones de investigacion desde el boton "Avanzar turno", llamando a `ATLAS.api.performGameAction`
+  - Ejecuta acciones de investigacion desde el boton "Avanzar turno", llamando a `ATLAS.api.performAction`
   - Registra en el log las pistas obtenidas y el tiempo simulado consumido por accion
   - Usa `ATLAS.api.logout()` al cerrar sesion desde la navegacion
 - ✅ `frontend/js/main.js` actualiza formularios de login/registro para usar autenticacion real del backend y mantiene la sesion iniciada tras registro
@@ -177,8 +203,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 2. **FASE 2**: Backend autenticacion (0.2.0)
 3. **FASE 3**: Documentacion y panel admin (0.3.0)
 4. **FASE 4**: Frontend de juego (0.4.0)
-5. **FASE 5**: Backend de mecanicas de juego (0.5.0) ✅ **ACTUAL**
-6. **FASE 6**: Testing y optimizaciones (0.6.0)
+5. **FASE 5**: Backend de mecanicas de juego (0.5.0)
+6. **FASE 6**: Testing y optimizaciones (0.6.0) ✅ **ACTUAL**
 7. **FASE 7**: Deployment a produccion (1.0.0)
 
 ---
