@@ -9,10 +9,11 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++
 
 # Copiar archivos de configuración
-COPY package.json package-lock.json* ./
+COPY package.json ./
 
-# Instalar dependencias (incluye devDependencies; se limpiará luego)
-RUN npm ci
+# Instalar dependencias
+# Usamos `npm install` porque el proyecto no mantiene package-lock.json en la raíz
+RUN npm install
 
 # Copiar código fuente
 COPY backend ./backend
