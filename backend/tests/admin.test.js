@@ -1,6 +1,6 @@
 /**
- * Backend - Admin Routes Tests
- * Tests para endpoints administrativos
+ * Backend - Admin Routes Tests (FASE 6)
+ * Tests para endpoints administrativos usando el contrato actual de autenticacion
  */
 
 const request = require('supertest');
@@ -17,9 +17,10 @@ describe('Admin Routes', () => {
     const adminRes = await request(app)
       .post('/api/v1/auth/register')
       .send({
-        username: 'testadmin',
-        email: 'admin@test.com',
-        password: 'TestPassword123!'
+        username: 'testadmin_f6',
+        email: 'admin_f6@test.com',
+        password: 'TestPassword123!',
+        passwordConfirm: 'TestPassword123!'
       });
 
     // Actualizar a admin
@@ -28,26 +29,35 @@ describe('Admin Routes', () => {
       ['admin', adminRes.body.user.id]
     );
 
-    // Login como admin
-    const loginRes = await request(app)
+    // Login como admin (usa username + password segun contrato actual)
+    const loginAdminRes = await request(app)
       .post('/api/v1/auth/login')
       .send({
-        email: 'admin@test.com',
+        username: 'testadmin_f6',
         password: 'TestPassword123!'
       });
 
-    adminToken = loginRes.body.token;
+    adminToken = loginAdminRes.body.tokens.accessToken;
 
     // Crear usuario jugador de prueba
     const playerRes = await request(app)
       .post('/api/v1/auth/register')
       .send({
-        username: 'testplayer',
-        email: 'player@test.com',
+        username: 'testplayer_f6',
+        email: 'player_f6@test.com',
+        password: 'TestPassword123!',
+        passwordConfirm: 'TestPassword123!'
+      });
+
+    // Login como jugador
+    const loginPlayerRes = await request(app)
+      .post('/api/v1/auth/login')
+      .send({
+        username: 'testplayer_f6',
         password: 'TestPassword123!'
       });
 
-    playerToken = playerRes.body.token;
+    playerToken = loginPlayerRes.body.tokens.accessToken;
     testUserId = playerRes.body.user.id;
   });
 
@@ -76,7 +86,7 @@ describe('Admin Routes', () => {
 
     test('Debe filtrar usuarios por busqueda', async () => {
       const res = await request(app)
-        .get('/api/v1/admin/users?search=testplayer')
+        .get('/api/v1/admin/users?search=testplayer_f6')
         .set('Authorization', `Bearer ${adminToken}`);
       expect(res.statusCode).toBe(200);
       expect(res.body.users.length).toBeGreaterThanOrEqual(0);
@@ -200,6 +210,6 @@ describe('Admin Routes', () => {
 
   afterAll(async () => {
     // Limpiar datos de prueba
-    await db.runAsync('DELETE FROM users WHERE email LIKE ?', ['%test%']);
+    await db.runAsync('DELETE FROM users WHERE email LIKE ?', ['%_f6@test.com']);
   });
 });
