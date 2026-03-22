@@ -88,6 +88,22 @@
 
 ## 📅 PLAN DE 9 FASES
 
+### Estado actualizado de fases (marzo 2026)
+
+> Nota: El plan original de 9 fases se ha ido consolidando en 7 fases efectivamente ejecutadas. El estado real de implementación por fase se detalla en el `CHANGELOG.md`.
+
+- [x] **FASE 1** – Setup inicial / Infraestructura base (versión 0.1.0)
+- [x] **FASE 2** – Backend de autenticación (versión 0.2.0)
+- [x] **FASE 3** – Documentación y panel admin (versión 0.3.0)
+- [x] **FASE 4** – Frontend de juego (versión 0.4.0)
+- [x] **FASE 5** – Backend de mecánicas de juego e integración frontend (versión 0.5.0)
+- [x] **FASE 6** – Testing y optimizaciones (versión 0.6.0)
+- [x] **FASE 7** – Deployment a producción (versión 1.0.0)
+
+Las fases 8 (Autenticación LDAP/AD) y 9 (Testing/Deploy del plan original) se tratan ahora como iteraciones futuras adicionales sobre la versión 1.0.0.
+
+---
+
 ### FASE 1: INFRAESTRUCTURA BASE Y AUTENTICACIÓN
 **Duración estimada**: 2 semanas  
 **Objetivo**: Proyecto operativo con login funcional  
