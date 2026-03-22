@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    container_name: operacion-atlas-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOST: 0.0.0.0
+      DATABASE_PATH: /app/backend/db/atlas.db
+      DATABASE_BACKUP_PATH: /app/backend/db/backups
+      CORS_ORIGIN: http://localhost:3000
+      API_PREFIX: /api/v1
+    volumes:
+      - atlas_db_data:/app/backend/db
+      - atlas_logs:/app/logs
+    # Si quieres usar un .env externo, descomenta la siguiente linea y crea un archivo .env en la raiz
+    # env_file:
+    #   - .env
+
+volumes:
+  atlas_db_data:
+  atlas_logs:
