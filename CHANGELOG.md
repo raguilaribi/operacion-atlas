@@ -18,6 +18,24 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.0.0] - 2026-03-22
+
+### Agregado - FASE 7: Deployment a produccion
+
+#### Documentacion y despliegue
+- ✅ `README.md` actualizado para reflejar la API real (`/api/v1/*`) y la estructura actual del proyecto
+- ✅ Nueva seccion de despliegue basico en servidor Linux (Node.js + pm2 + Nginx como reverse proxy)
+- ✅ Nuevo documento `docs/DEPLOYMENT_FASE7.md` con el flujo recomendado de deployment:
+  - Provisionar servidor
+  - Configurar `.env` de produccion
+  - Inicializar base de datos SQLite
+  - Ejecutar servidor con pm2 o systemd
+  - (Opcional) Exponer via Nginx + HTTPS
+
+> Nota: El despliegue sigue pensado para una sola instancia con SQLite local. Escalamiento horizontal y migracion a BD centralizada quedan fuera del alcance de esta fase.
+
+---
+
 ## [0.6.0] - 2026-03-22
 
 ### Agregado - FASE 6: Testing y optimizaciones
@@ -204,8 +222,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 3. **FASE 3**: Documentacion y panel admin (0.3.0)
 4. **FASE 4**: Frontend de juego (0.4.0)
 5. **FASE 5**: Backend de mecanicas de juego (0.5.0)
-6. **FASE 6**: Testing y optimizaciones (0.6.0) ✅ **ACTUAL**
-7. **FASE 7**: Deployment a produccion (1.0.0)
+6. **FASE 6**: Testing y optimizaciones (0.6.0)
+7. **FASE 7**: Deployment a produccion (1.0.0) ✅ **ACTUAL**
 
 ---
 
