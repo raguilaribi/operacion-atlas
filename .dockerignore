@@ -1,0 +1,15 @@
+# See https://docs.docker.com/engine/reference/builder/#dockerignore-file
+node_modules
+npm-debug.log
+Dockerfile*
+.dockerignore
+.git
+.gitignore
+logs
+coverage
+*.log
+.env
+.env.*
+**/*.sqlite
+**/*.db
+backend/db/backups
